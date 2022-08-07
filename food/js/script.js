@@ -40,15 +40,24 @@ window.addEventListener("DOMContentLoaded", () => {
 
 
     //Timer
-    const deadline = '2022-08-11';  //устанавливаем дедлайн
+    const deadline = '2022-08-12';  //устанавливаем дедлайн
 
     function getTimeRemaining(endtime) {  //Напишем функцию, которая возвращает объект с разницей даты дедлайна и текущего времени
-        const t = Date.parse(endtime) - Date.parse(new Date()),
-              days = Math.floor( (t/(1000*60*60*24)) ),
-              hours = Math.floor( ((t/(1000*60*60))%24) ),
-              minutes = Math.floor( ((t/(1000*60))%60) ),
-              seconds = Math.floor( ((t/1000)%60) );
-        
+        let days, hours, minutes, seconds;
+        const t = Date.parse(endtime) - Date.parse(new Date());
+
+        if (t <= 0) {
+            days = 0;
+            hours = 0;
+            minutes = 0;
+            seconds = 0;
+        } else {
+            days = Math.floor( (t/(1000*60*60*24)) ),
+            hours = Math.floor( ((t/(1000*60*60))%24) ),
+            minutes = Math.floor( ((t/(1000*60))%60) ),
+            seconds = Math.floor( ((t/1000)%60) );
+        }
+
         return {total, days, hours, minutes, seconds}
     }
 
@@ -85,4 +94,38 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 
     setClock('.timer', deadline);
+
+    //Modal
+    const modalTrigger = document.querySelectorAll('[data-modal]'),
+          modal = document.querySelector('.modal'),
+          modalCloseBtn = document.querySelector('.modal__close');
+
+    modalTrigger.forEach(btn => {
+        btn.addEventListener('click', () => {
+            modal.classList.add('show');
+            modal.classList.remove('hide');
+            document.body.style.overflow = 'hidden';
+        })
+    });
+
+    function closeModal() {
+        modal.classList.add('hide');
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+        
+    }
+
+    modalCloseBtn.addEventListener('click', closeModal);
+
+    modal.addEventListener('click', (e) => { //Закрытие модалки при клике на подложку
+        if(e.target === modal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => { //Закрытие модалки с помощью ESC
+        if (e.code === "Escape" && modal.classList.contains('show')) {
+            closeModal();
+        }
+    } )
 });
